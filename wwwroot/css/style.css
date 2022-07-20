@@ -1,0 +1,151 @@
+@import url("C:/dev/Web/Styles/normalize.min.css");	
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: Roboto, sans-serif;
+	font-size: 32px;
+	color: #333;
+	background-color: white;
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+
+.container1	{
+	width: 100%;
+	max-width: 1110px;
+	margin: 0 auto;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin:0;
+}
+
+.header {
+	width: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	background-color: #FFFFFF;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	height: 72px;
+	filter: drop-shadow(0 0 3px rgba(0,4,4,0.5));
+	display: flex;
+	align-items: center;
+}
+
+.header_container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.btnEnter {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #E0E0E0;
+	border-radius: 3px;
+    color: #1D1D1D;
+	background-color: #FFFFFF;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	margin-right: 30px;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+}
+
+.header_buttons {
+	display: flex;
+	align-items: center;
+}
+
+.main {
+	margin-top:72px;
+}
+
+.search {
+	margin-top: 70px;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	border-bottom-color: #626262;
+	width: 100%;
+	font-size: 18px;
+	font-weight: 400;
+}
+
+input {
+	outline: 0;
+    outline-offset: 0;
+}
+
+.body_head {
+	margin-top: 80px;
+	color: #1D1D1D;
+	font-size: 22px;
+	font-weight: 400;
+}
+
+.restList1Неиспользуется {
+	display: flex;
+	margin-top: 30px;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.restList {
+	margin-top: 30px;
+}
+
+.card {
+	display: inline-block;
+	margin-bottom: 30px;
+}
+
+
+.restName {
+	margin-top: 5px;
+	color: #1D1D1D;
+	font-size: 16px;
+	font-weight: 400;
+}
+
+.restInfo {
+	margin-top: 5px;
+	color: #626262;
+	font-size: 14px;
+	font-weight: 400;
+}
+
+.restTime {
+	margin-top: 5px;
+	color: #1D1D1D;
+	font-size: 13px;
+	font-weight: 400;
+	margin-bottom: 10px;
+}
+
+.footer {
+	background-color: #262626;
+}
+
+.footer_logo{
+	padding-bottom: 40px;
+	padding-top: 40px;
+}
