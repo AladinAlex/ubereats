@@ -12,7 +12,9 @@
 *@
 
 <div class="container1">
-	<input type="text" placeholder="Поиск по ресторанам и кухням" class="search" />
+    <form asp-action="SearchRestaurant" asp-controller="Home">
+        <input type="text" placeholder="Поиск по ресторанам и кухням" name="restName" class="search" value=@ViewBag.Search />
+    </form>
 </div>
 @*<div class="container1">
 	<div class="body_head">
@@ -20,26 +22,26 @@
 	</div>
 </div>*@
 <div class="container1">
-	<div class="container">
-		<div class="restList">
-			<div class="row">
-				<div class="body_head">
-					Рестораны в Москве
-				</div>
-			</div>
-		<div class="row">
-			@foreach (var rest in Model)
-			{
-				<div class="col-xs-12 col-md-6 col-lg-4">
-				<div class="card">
-					<img src="@Url.Action("GetImage", "Home", new {id = (int)@rest.ID})" alt=@rest.RestName >
-					<div class="restName">@rest.RestName — @rest.District</div>
-					<div class="restInfo">@rest.KitchenType</div>
-					<div class="restTime">@rest.CookingTimeStart - @rest.CookingTimeEnd мин</div>
-				</div>
-			</div>
-			}
-		</div>
-		</div>
-	</div>
+    <div class="container">
+        <div class="restList">
+            <div class="row">
+                <div class="body_head">
+                    Рестораны в Москве
+                </div>
+            </div>
+            <div class="row">
+                @foreach (var rest in Model)
+                {
+                    <div class="col-xs-12 col-md-6 col-lg-4">
+                        <div class="card">
+                            <img src="@Url.Action("GetImage", "Home", new {id = (int)@rest.ID})" alt=@rest.RestName>
+                            <div class="restName">@rest.RestName - @rest.District</div>
+                            <div class="restInfo">@rest.KitchenType</div>
+                            <div class="restTime">@rest.CookingTimeStart - @rest.CookingTimeEnd мин</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>

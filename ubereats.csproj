@@ -7,27 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Home\assets\**" />
+    <Content Remove="Views\Home\assets\**" />
+    <EmbeddedResource Remove="Views\Home\assets\**" />
+    <None Remove="Views\Home\assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\css\style.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\Home\assets\images\basket.png" />
-    <Content Include="Views\Home\assets\images\BQ.png" />
-    <Content Include="Views\Home\assets\images\Cinnabon.png" />
-    <Content Include="Views\Home\assets\images\DimSum.png" />
-    <Content Include="Views\Home\assets\images\logo.svg" />
-    <Content Include="Views\Home\assets\images\mc.png" />
-    <Content Include="Views\Home\assets\images\PIZZELOVE.png" />
-    <Content Include="Views\Home\assets\images\white-logo.svg" />
-    <Content Include="Views\Home\assets\images\Zю.png" />
-    <Content Include="Views\Home\assets\images\ДвижОК.png" />
-    <Content Include="Views\Home\assets\images\Дзы.png" />
-    <Content Include="Views\Home\assets\images\НЯ.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Home\assets\images\" />
-    <Folder Include="Views\Home\assets\css\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,5 +24,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.7" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>
