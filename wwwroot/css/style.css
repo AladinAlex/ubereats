@@ -119,6 +119,11 @@ input {
 	margin-bottom: 30px;
 }
 
+a {
+	text-decoration: none;
+}
+
+
 
 .restName {
 	margin-top: 5px;

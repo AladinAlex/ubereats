@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Drawing;
 using ubereats.Models;
@@ -49,10 +50,19 @@ namespace ubereats.Controllers
         {
             return View();
         }
-
+        [Authorize]
         public IActionResult Autorization()
         {
             return View("~/Views/Autorization.cshtml");
+        }
+
+        public IActionResult Rest(int ID)
+        {
+            ViewBag.Search = null;
+            Restaurant? rest = db.Restaurants.Where(r => r.ID == ID).FirstOrDefault();
+            rest.Image = null;
+            ViewBag.Title = rest.RestName;
+            return View("~/Views/Home/Rest.cshtml", rest);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
