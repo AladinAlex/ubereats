@@ -9,8 +9,11 @@ using ubereats.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<RestaurantContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connection));
 
 //// Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -43,6 +46,7 @@ var app = builder.Build();
 
 
 app.UseDefaultFiles();
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -53,25 +57,29 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
 app.UseAuthentication();
 
-app.Map("/Autorization/{username}", (string username) =>
-{
-    var claims = new List<Claim> { new Claim(ClaimTypes.Name, username) };
-    var jwt = new JwtSecurityToken(
-            issuer: AuthOptions.ISSUER,
-            audience: AuthOptions.AUDIENCE,
-            claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)), // время действия 2 минуты
-            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+app.MapPost("/Autorization", (User userData) =>
+//{
+//    //User? user = usc.Users.FirstOrDefault(u => u.loginname == userData .loginname && u.password == userData.password);
+//    User? user = null;
+//    if (user == null) return Results.Unauthorized();
 
-    return new JwtSecurityTokenHandler().WriteToken(jwt);
-});
+//    var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.loginname) };
+//    var jwt = new JwtSecurityToken(
+//            issuer: AuthOptions.ISSUER,
+//            audience: AuthOptions.AUDIENCE,
+//            claims: claims,
+//            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)), // время действия 2 минуты
+//            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+
+//    return Results.Json(jwt);
+//});
+//app.Map("/data", [Authorize] () => (HttpContext context) => $"Hello World!");
 
 app.MapControllerRoute(
     name: "default",

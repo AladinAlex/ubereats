@@ -4,7 +4,7 @@ namespace ubereats.Models
 {
     public class UserContext : DbContext
     {
-        public DbSet<User> Restaurants { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
 
         public UserContext(DbContextOptions<UserContext> options) : base(options)
         {
