@@ -12,6 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<RestaurantContext>(options => options.UseSqlServer(connection));
 
+builder.Services.AddAuthentication("AladinAuth").AddJwtBearer("AladinAuth", config => { 
+    
+});
+//builder.Services.AddAuthorization();
+
 // Добавление сервисов в контейнер
 builder.Services.AddControllersWithViews();
 
