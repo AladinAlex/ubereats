@@ -16,7 +16,9 @@
         <div class="container1">
             <div class="header_container">
                 <div class="logo">
-                    <a href="#start">	<img src="~/logo.svg" alt="logo" class="logo_img" height="14" width="120"> </a>
+                    <form method="post" asp-area="" asp-controller="Home" asp-action="Index">
+                        <input type="image" src="~/logo.svg" alt="logo" class="logo_img" width="120" asp-area="" asp-controller="Home" asp-action="Index"/>
+                    </form>
                 </div>
                 <div class="header_buttons">
                     <form method="post">
@@ -38,10 +40,10 @@
         </div>
     </footer>
     @*    <footer class="border-top footer text-muted">
-        <div class="container">
-        &copy; 2022 - ubereats - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-        </footer>*@
+    <div class="container">
+    &copy; 2022 - ubereats - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
+    </footer>*@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

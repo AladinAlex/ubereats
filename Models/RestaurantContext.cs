@@ -5,6 +5,7 @@ namespace ubereats.Models
     public class RestaurantContext: DbContext
     {
         public DbSet<Restaurant> Restaurants { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
 
         public RestaurantContext(DbContextOptions<RestaurantContext> options) : base(options)
         {
@@ -23,8 +24,7 @@ namespace ubereats.Models
                         CookingTimeEnd = 5,
                         Image = convertImageToByte(@"\wwwroot\DefaultImage.jpg"),
                         isDeleted = true
-                    }
-                    ,
+                    },
                     new Restaurant {
                         ID = 2,
                         RestName = "Макдоналдс",
@@ -116,6 +116,14 @@ namespace ubereats.Models
                         isDeleted = false
                     }
             );
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    loginname = "admin",
+                    password = "admin",
+                    email = "admin@mail.ru",
+                });
         }
 
         private byte[] convertImageToByte(string path)

@@ -2,7 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Drawing;
+using System.Security.Claims;
 using ubereats.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace ubereats.Controllers
 {
@@ -50,12 +55,36 @@ namespace ubereats.Controllers
         {
             return View();
         }
-        [Authorize]
+        //[Authorize]
         public IActionResult Autorization()
         {
+            // claim - требование, что требуется для jwt-токена
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, "admin"), // пользователь
+                new Claim(JwtRegisteredClaimNames.Email, "admin@mail.ru")
+            };
+
+            byte[] secretBytes = Encoding.UTF8.GetBytes("aladin_aladin_aladin_aladin_aladin_aladin"); // секретная фраза для key
+            var key = new SymmetricSecurityKey(secretBytes);
+
+            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken("https://localhost:7295/",
+                "https://localhost:7295/",
+                claims,
+                notBefore: DateTime.Now,
+                expires: DateTime.Now.AddMinutes(60), // токен действителен час с момента создания
+                signingCredentials: signingCredentials // алгоритм шифрования
+                );
+
+            var value = new JwtSecurityTokenHandler().WriteToken(token);
+
+            ViewBag.Token = value;
             return View("~/Views/Autorization.cshtml");
         }
 
+        [Authorize]
         public IActionResult Rest(int ID)
         {
             ViewBag.Search = null;
