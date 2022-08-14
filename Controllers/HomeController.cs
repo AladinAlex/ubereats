@@ -65,13 +65,13 @@ namespace ubereats.Controllers
                 new Claim(JwtRegisteredClaimNames.Email, "admin@mail.ru")
             };
 
-            byte[] secretBytes = Encoding.UTF8.GetBytes("aladin_aladin_aladin_aladin_aladin_aladin"); // секретная фраза для key
+            byte[] secretBytes = Encoding.UTF8.GetBytes(Constants.secretKey); // секретная фраза для key
             var key = new SymmetricSecurityKey(secretBytes);
 
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken("https://localhost:7295/",
-                "https://localhost:7295/",
+            var token = new JwtSecurityToken(Constants.issuer,
+                Constants.audience,
                 claims,
                 notBefore: DateTime.Now,
                 expires: DateTime.Now.AddMinutes(60), // токен действителен час с момента создания

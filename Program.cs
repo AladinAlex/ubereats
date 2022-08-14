@@ -1,3 +1,4 @@
+using ubereats;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -12,8 +13,17 @@ var builder = WebApplication.CreateBuilder(args);
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<RestaurantContext>(options => options.UseSqlServer(connection));
 
-builder.Services.AddAuthentication("AladinAuth").AddJwtBearer("AladinAuth", config => { 
-    
+builder.Services.AddAuthentication("AladinAuth").AddJwtBearer("AladinAuth", config => {
+
+    byte[] secretBytes = Encoding.UTF8.GetBytes(Constants.secretKey); // секретная фраза для key
+    var key = new SymmetricSecurityKey(secretBytes);
+        
+    config.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidIssuer = Constants.issuer,
+        ValidAudience = Constants.audience,
+        IssuerSigningKey = key
+    };
 });
 //builder.Services.AddAuthorization();
 
