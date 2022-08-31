@@ -1,4 +1,5 @@
 ﻿@model User;
+
 @{
     Layout = null;
 }
@@ -6,32 +7,33 @@
 <!DOCTYPE html>
 <html lang="en"> 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Uber Eats - Authentication</title>
 	<link rel="stylesheet" href="~/css/autorization.css">
 </head>
 <body>
-    <div>
+@*    <div>
         @ViewBag.Token
-    </div>
-  <form method="post" action="" class="login">
+    </div>*@
+  <form method="post" class="login" asp-controller="Authentication" asp-action="Login">
     <p>
       <label asp-for="loginname"></label>
-      <input asp-for="loginname" type="text" name="login" id="login" value="">
+      <input asp-for="loginname" type="text" name="login" id="login"  />
       <span asp-validation-for="loginname"></span>
     </p>
-
     <p>
       <label asp-for="password"></label>
-      <input asp-for="password" type="password" name="password" id="password" value="">
+      <input asp-for="password" type="password" name="password" id="password" />
       <span asp-validation-for="password"></span>
     </p>
-
     <p class="login-submit">
-      <button type="submit" class="login-button" asp-area="" asp-controller="Authentication" asp-action="Login">Войти</button>
+      @*<input type="submit" class="login-button" value="Войти"/>*@
+      <button type="submit" class="login-button"></button>
     </p>
-    <p class="forgot-password"><a  asp-area="" asp-controller="Home" asp-action="Index">Вернуться на главную</a></p>
+    <p class="forgot-password">
+        <a asp-controller="Home" asp-action="Index">Вернуться на главную</a>
+    </p>
   </form>
 </body>
 </html>
