@@ -13,7 +13,6 @@ namespace ubereats.Controllers
 {
     public class HomeController : Controller
     {
-        //private readonly ILogger<HomeController> _logger;
         RestaurantContext db;
 
         public HomeController(RestaurantContext context)
@@ -30,7 +29,6 @@ namespace ubereats.Controllers
             var list = db.Restaurants.Where(r => r.isDeleted == false).ToList();
             list.ForEach(rest => rest.Image = null);    // чтобы не нагружать, все равно массив байт Image там не используется
             return View(list);
-            //return View();
         }
 
         /// <summary>
@@ -56,32 +54,9 @@ namespace ubereats.Controllers
             return View();
         }
         //[Authorize]
-        public IActionResult Autorization()
+        public IActionResult Authentication()
         {
-            // claim - требование, что требуется для jwt-токена
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, "admin"), // пользователь
-                new Claim(JwtRegisteredClaimNames.Email, "admin@mail.ru")
-            };
-
-            byte[] secretBytes = Encoding.UTF8.GetBytes(Constants.secretKey); // секретная фраза для key
-            var key = new SymmetricSecurityKey(secretBytes);
-
-            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(Constants.issuer,
-                Constants.audience,
-                claims,
-                notBefore: DateTime.Now,
-                expires: DateTime.Now.AddMinutes(60), // токен действителен час с момента создания
-                signingCredentials: signingCredentials // алгоритм шифрования
-                );
-
-            var value = new JwtSecurityTokenHandler().WriteToken(token);
-
-            ViewBag.Token = value;
-            return View("~/Views/Autorization.cshtml");
+            return View("~/Views/Authentication/Authentication.cshtml");
         }
 
         [Authorize]

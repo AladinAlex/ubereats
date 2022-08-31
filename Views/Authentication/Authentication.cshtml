@@ -1,4 +1,5 @@
-﻿@{
+﻿@model User;
+@{
     Layout = null;
 }
 
@@ -7,7 +8,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>Uber Eats - autorization</title>
+	<title>Uber Eats - Authentication</title>
 	<link rel="stylesheet" href="~/css/autorization.css">
 </head>
 <body>
@@ -16,17 +17,19 @@
     </div>
   <form method="post" action="" class="login">
     <p>
-      <label for="login">Логин:</label>
-      <input type="text" name="login" id="login" value="">
+      <label asp-for="loginname"></label>
+      <input asp-for="loginname" type="text" name="login" id="login" value="">
+      <span asp-validation-for="loginname"></span>
     </p>
 
     <p>
-      <label for="password">Пароль:</label>
-      <input type="password" name="password" id="password" value="">
+      <label asp-for="password"></label>
+      <input asp-for="password" type="password" name="password" id="password" value="">
+      <span asp-validation-for="password"></span>
     </p>
 
     <p class="login-submit">
-      <button type="submit" class="login-button">Войти</button>
+      <button type="submit" class="login-button" asp-area="" asp-controller="Authentication" asp-action="Login">Войти</button>
     </p>
     <p class="forgot-password"><a  asp-area="" asp-controller="Home" asp-action="Index">Вернуться на главную</a></p>
   </form>
