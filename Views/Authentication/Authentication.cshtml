@@ -1,4 +1,5 @@
 ﻿@model User;
+
 @{
     Layout = null;
 }
@@ -15,22 +16,24 @@
     <div>
         @ViewBag.Token
     </div>
-  <form method="post" action="" class="login">
-    <p>
-      <label asp-for="loginname"></label>
-      <input asp-for="loginname" type="text" name="login" id="login" value="">
-      <span asp-validation-for="loginname"></span>
-    </p>
+  <form method="post" class="login" asp-controller="Authentication" asp-action="Login">
 
-    <p>
-      <label asp-for="password"></label>
-      <input asp-for="password" type="password" name="password" id="password" value="">
-      <span asp-validation-for="password"></span>
-    </p>
+      <p>
+          <label asp-for="loginname"></label>
+          <input asp-for="loginname" type="text"/>
+          <span asp-validation-for="loginname"></span>
+      </p>
 
-    <p class="login-submit">
-      <button type="submit" class="login-button" asp-area="" asp-controller="Authentication" asp-action="Login">Войти</button>
-    </p>
+      <p>
+          <label asp-for="password"></label>
+          <input asp-for="password" type="password"/>
+          <span asp-validation-for="password"></span>
+      </p>
+
+      <p class="login-submit">
+          <button type="submit" class="login-button" asp-area="" asp-controller="Authentication" asp-action="Login">Войти</button>
+      </p>
+
     <p class="forgot-password"><a  asp-area="" asp-controller="Home" asp-action="Index">Вернуться на главную</a></p>
   </form>
 </body>

@@ -14,24 +14,8 @@ string connection = builder.Configuration.GetConnectionString("DefaultConnection
 builder.Services.AddDbContext<RestaurantContext>(options => options.UseSqlServer(connection));
 
 builder.Services.AddAuthentication("AladinAuth").AddJwtBearer("AladinAuth", config => {
-        
-    config.TokenValidationParameters = new TokenValidationParameters()
-    {
-        // укзывает, будет ли валидироваться издатель при валидации токена
-        ValidateIssuer = true,
-        // строка, представляющая издателя
-        ValidIssuer = Constants.issuer,
-        // будет ли валидироваться потребитель токена
-        ValidateAudience = true,
-        // установка потребителя токена
-        ValidAudience = Constants.audience,
-        // будет ли валидироваться время существования
-        ValidateLifetime = true,
-        // установка ключа безопасности
-        IssuerSigningKey = Constants.GetSymmetricSecurityKey(),
-        // валидация ключа безопасности
-        ValidateIssuerSigningKey = true
-    };
+
+    config.TokenValidationParameters = JwtConfiguration.GetTokenValidationParameters();
 });
 //builder.Services.AddAuthorization();
 

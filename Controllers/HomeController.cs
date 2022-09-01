@@ -1,13 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Drawing;
-using System.Security.Claims;
 using ubereats.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace ubereats.Controllers
 {
@@ -20,7 +14,7 @@ namespace ubereats.Controllers
             db = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             ViewBag.Title = "restaurants";
             ViewBag.Search = null;
@@ -49,36 +43,22 @@ namespace ubereats.Controllers
             return View("~/Views/Home/Index.cshtml", list);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
         //[Authorize]
         public IActionResult Authentication()
         {
             return View("~/Views/Authentication/Authentication.cshtml");
         }
 
-        [Authorize]
-        public IActionResult Rest(int ID)
+        public ActionResult GetImage(int id)
         {
-            ViewBag.Search = null;
-            Restaurant? rest = db.Restaurants.Where(r => r.ID == ID).FirstOrDefault();
-            rest.Image = null;
-            ViewBag.Title = rest.RestName;
-            return View("~/Views/Home/Rest.cshtml", rest);
+            byte[] imageData = db.Restaurants.First(r => r.ID == id).Image;
+            return File(imageData, "image/jpg");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        public ActionResult GetImage(int id)
-        {
-            byte[] imageData = db.Restaurants.First(r => r.ID == id).Image;
-            return File(imageData, "image/jpg");
         }
     }
 }

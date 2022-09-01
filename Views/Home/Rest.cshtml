@@ -7,7 +7,7 @@
 <div class="container1">
     <div class="container">
             <div class="card">
-                 <img src="@Url.Action("GetImage", "Home", new {id = (int)@Model.ID})" alt=@Model.RestName>
+                 <img src="@Url.Action("GetImage", "Restaurant", new {id = (int)@Model.ID})" alt=@Model.RestName>
                 <div class="restName">@Model.RestName - @Model.District</div>
                 <div class="restInfo">@Model.KitchenType</div>
                 <div class="restTime">@Model.CookingTimeStart - @Model.CookingTimeEnd мин</div>

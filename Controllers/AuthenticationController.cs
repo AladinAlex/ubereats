@@ -14,36 +14,24 @@ namespace ubereats.Controllers
     public class
     AuthenticationController : Controller
     {
-        RestaurantContext db;
+        readonly RestaurantContext db;
         public AuthenticationController(RestaurantContext context)
         {
             db = context;
         }
-        public string Login() // авторизоваться
+        [HttpPost]
+        public IActionResult Login(User user) // авторизоваться
         {
-            return "Authentication";
+            if(ModelState.IsValid) // если валидный объект User
+            {
+                return Redirect("/");
+            }
+            return View("~/Views/Authentication/Authentication.cshtml");
         }
 
         public IActionResult Index()
         {
-            // claim - требование, что требуется для jwt-токена
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, "admin"), // пользователь
-                new Claim(JwtRegisteredClaimNames.Email, "admin@mail.ru")
-            };
-
-            var token = new JwtSecurityToken(Constants.issuer,
-                Constants.audience,
-                claims,
-                notBefore: DateTime.Now,
-                expires: DateTime.Now.AddMinutes(60), // токен действителен час с момента создания
-                signingCredentials: new SigningCredentials(Constants.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256) // алгоритм шифрования
-                );
-
-            var value = new JwtSecurityTokenHandler().WriteToken(token);
-
-            ViewBag.Token = value;
+            ViewBag.Token = JwtConfiguration.GetJwtSecurityToken();
             return View("~/Views/Authentication/Authentication.cshtml");
         }
     }
