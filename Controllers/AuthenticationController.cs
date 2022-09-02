@@ -19,16 +19,29 @@ namespace ubereats.Controllers
         {
             db = context;
         }
-        [HttpPost]
-        public IActionResult Login(User user) // авторизоваться
+        [HttpPost("/Login")]
+        public IActionResult Login(User _user) // авторизоваться
         {
-            if(ModelState.IsValid) // если валидный объект User
+            if (ModelState.IsValid) // если валидный объект User
             {
-                return Redirect("/");
+                //https://metanit.com/sharp/aspnet5/23.7.php
+                User user = db.Users.FirstOrDefault(u => u.loginname == _user.loginname && u.password == _user.password);
+                if (user != null)
+                {
+                    var jwt = JwtConfiguration.GetJwtSecurityToken(user.loginname, user.email);
+                    var responce = new
+                    {
+                        access_token = jwt,
+                        username = user.loginname
+                    };
+                    return Json(responce);
+                    //return Redirect("/");
+                }
             }
             return View("~/Views/Authentication/Authentication.cshtml");
         }
 
+        //[HttpPost("/token")]
         public IActionResult Index()
         {
             ViewBag.Token = JwtConfiguration.GetJwtSecurityToken();

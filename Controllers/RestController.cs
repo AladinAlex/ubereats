@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ubereats.Interfaces;
 using ubereats.Models;
 namespace ubereats.Controllers
 {
-    public class RestaurantController : Controller
+    public class RestaurantController : Controller, IRestaurant
     {
         RestaurantContext db;
         public RestaurantController(RestaurantContext context)

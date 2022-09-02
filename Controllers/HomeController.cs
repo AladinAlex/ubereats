@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using ubereats.Interfaces;
 using ubereats.Models;
 
 namespace ubereats.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : Controller, IRestaurant
     {
         RestaurantContext db;
 
