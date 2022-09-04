@@ -19,9 +19,14 @@ namespace ubereats.Controllers
         {
             db = context;
         }
-        public string Login() // авторизоваться
+        [HttpPost]
+        public IActionResult Login(User user) // авторизоваться
         {
-            return "Authentication";
+            if (ModelState.IsValid)
+            {
+               return Redirect("/");// переадресация на главную страницу
+            }
+            return View("Index");
         }
 
         public IActionResult Index()
