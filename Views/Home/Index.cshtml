@@ -26,7 +26,7 @@
                     <div class="col-xs-12 col-md-6 col-lg-4">
                         <div class="card">
                             <form method="post">
-                                <a class="cardref" asp-area="" asp-controller="Home" asp-action="Rest" asp-route-id=@rest.ID >
+                                <a class="cardref" asp-controller="Restaurant" asp-action="Restaurant" asp-route-id=@rest.ID >
                                 <img src="@Url.Action("GetImage", "Home", new {id = (int)@rest.ID})" alt=@rest.RestName>
                                 <div class="restName">@rest.RestName - @rest.District</div>
                                 <div class="restInfo">@rest.KitchenType</div>

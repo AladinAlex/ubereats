@@ -14,41 +14,37 @@ namespace ubereats.Controllers
     public class
     AuthenticationController : Controller
     {
-        RestaurantContext db;
+        readonly RestaurantContext db;
         public AuthenticationController(RestaurantContext context)
         {
             db = context;
         }
-        [HttpPost]
-        public IActionResult Login(User user) // авторизоваться
+        [HttpPost("/Login")]
+        public IActionResult Login(User _user) // авторизоваться
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // если валидный объект User
             {
-               return Redirect("/");// переадресация на главную страницу
+                //https://metanit.com/sharp/aspnet5/23.7.php
+                User user = db.Users.FirstOrDefault(u => u.loginname == _user.loginname && u.password == _user.password);
+                if (user != null)
+                {
+                    var jwt = JwtConfiguration.GetJwtSecurityToken(user.loginname, user.email);
+                    var responce = new
+                    {
+                        access_token = jwt,
+                        username = user.loginname
+                    };
+                    return Json(responce);
+                    //return Redirect("/");
+                }
             }
-            return View("Index");
+            return View("~/Views/Authentication/Authentication.cshtml");
         }
 
+        //[HttpPost("/token")]
         public IActionResult Index()
         {
-            // claim - требование, что требуется для jwt-токена
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, "admin"), // пользователь
-                new Claim(JwtRegisteredClaimNames.Email, "admin@mail.ru")
-            };
-
-            var token = new JwtSecurityToken(Constants.issuer,
-                Constants.audience,
-                claims,
-                notBefore: DateTime.Now,
-                expires: DateTime.Now.AddMinutes(60), // токен действителен час с момента создания
-                signingCredentials: new SigningCredentials(Constants.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256) // алгоритм шифрования
-                );
-
-            var value = new JwtSecurityTokenHandler().WriteToken(token);
-
-            ViewBag.Token = value;
+            ViewBag.Token = JwtConfiguration.GetJwtSecurityToken();
             return View("~/Views/Authentication/Authentication.cshtml");
         }
     }
