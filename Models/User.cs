@@ -7,17 +7,12 @@ namespace ubereats.Models
     {
         [Column("User_ID")]
         public int Id { get; set; }
-
         [Display(Name = "Логин:")]
         [Required(ErrorMessage = "Введите логин")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Слишком короткий логин")]
         public string loginname { get; set; } = "";
-
         [Display(Name = "Пароль:")]
         [Required(ErrorMessage = "Введите пароль")]
-        [StringLength(100, MinimumLength = 8, ErrorMessage = "Слишком короткий пароль")]
         public string password { get; set; } = "";
-
         public string email { get; set; } = "";
     }
 }
