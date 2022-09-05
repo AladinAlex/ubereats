@@ -14,12 +14,14 @@ namespace ubereats.Controllers
     public class
     AuthenticationController : Controller
     {
-        readonly RestaurantContext db;
+        private readonly RestaurantContext db;
+        //private readonly HttpContext httpContext;
+
         public AuthenticationController(RestaurantContext context)
         {
             db = context;
         }
-        [HttpPost("/Login")]
+
         public IActionResult Login(User _user) // авторизоваться
         {
             if (ModelState.IsValid) // если валидный объект User
@@ -29,13 +31,9 @@ namespace ubereats.Controllers
                 if (user != null)
                 {
                     var jwt = JwtConfiguration.GetJwtSecurityToken(user.loginname, user.email);
-                    var responce = new
-                    {
-                        access_token = jwt,
-                        username = user.loginname
-                    };
-                    return Json(responce);
-                    //return Redirect("/");
+                    //return jwt;
+                    ViewBag.Token = jwt;
+                    return Redirect("/");
                 }
             }
             return View("~/Views/Authentication/Authentication.cshtml");
@@ -44,7 +42,7 @@ namespace ubereats.Controllers
         //[HttpPost("/token")]
         public IActionResult Index()
         {
-            ViewBag.Token = JwtConfiguration.GetJwtSecurityToken();
+            //ViewBag.Token = JwtConfiguration.GetJwtSecurityToken();
             return View("~/Views/Authentication/Authentication.cshtml");
         }
     }

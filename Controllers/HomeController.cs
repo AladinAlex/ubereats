@@ -8,7 +8,9 @@ namespace ubereats.Controllers
 {
     public class HomeController : Controller, IRestaurant
     {
-        RestaurantContext db;
+        private readonly RestaurantContext db;
+        //private readonly HttpContext httpContext;
+        
 
         public HomeController(RestaurantContext context)
         {
@@ -19,8 +21,6 @@ namespace ubereats.Controllers
         {
             ViewBag.Title = "restaurants";
             ViewBag.Search = null;
-            //RestaurantContext db = new RestaurantContext();
-            //ViewBag.Resraurants = db.Restaurants.ToList().Where(r => r.isDeleted == false);
             var list = db.Restaurants.Where(r => r.isDeleted == false).ToList();
             list.ForEach(rest => rest.Image = null);    // чтобы не нагружать, все равно массив байт Image там не используется
             return View(list);
@@ -35,19 +35,13 @@ namespace ubereats.Controllers
         {
             ViewBag.Title = "restaurants";
             ViewBag.Search = restName;
-            var list = db.Restaurants.ToList();
+            List<Restaurant> list;
             if (!String.IsNullOrEmpty(restName))
-                list = list.Where(r => r.isDeleted == false && (r.RestName.ToLower().Contains(restName.ToLower()) || r.KitchenType.ToLower().Contains(restName.ToLower()))).ToList();
+                list = db.Restaurants.Where(r => r.isDeleted == false && (r.RestName.ToLower().Contains(restName.ToLower()) || r.KitchenType.ToLower().Contains(restName.ToLower()))).ToList();
             else
-                list = list.Where(r => r.isDeleted == false).ToList();
+                list = db.Restaurants.Where(r => r.isDeleted == false).ToList();
             list.ForEach(rest => rest.Image = null);    // чтобы не нагружать, все равно массив байт Image там не используется
             return View("~/Views/Home/Index.cshtml", list);
-        }
-
-        //[Authorize]
-        public IActionResult Authentication()
-        {
-            return View("~/Views/Authentication/Authentication.cshtml");
         }
 
         public ActionResult GetImage(int id)

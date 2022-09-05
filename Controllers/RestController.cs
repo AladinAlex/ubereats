@@ -16,7 +16,7 @@ namespace ubereats.Controllers
             return View();
         }
 
-        //[Authorize]
+        [Authorize]
         public IActionResult Restaurant(int ID)
         {
             ViewBag.Search = null;
