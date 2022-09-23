@@ -12,6 +12,5 @@ namespace ubereats.Models
         public int CookingTimeStart { get; set; }
         public int CookingTimeEnd { get; set; }
         public byte[] Image { get; set; } = null!;
-        public bool isDeleted { get; set; }
     }
 }

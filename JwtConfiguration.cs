@@ -10,7 +10,7 @@ namespace ubereats
         /// Default token configuration
         /// </summary>
         /// <returns></returns>
-        public static TokenValidationParameters GetTokenValidationParameters()
+        public static async Task<TokenValidationParameters> GetTokenValidationParameters()
         {
             return new TokenValidationParameters()
             {
@@ -30,7 +30,7 @@ namespace ubereats
                 ValidateIssuerSigningKey = true
             };
         }
-        public static TokenValidationParameters GetTokenValidationParameters(bool _validateIssuer, string _validIssuer, bool _validateAudience,
+        public static async Task<TokenValidationParameters> GetTokenValidationParameters(bool _validateIssuer, string _validIssuer, bool _validateAudience,
                                                                                 string _validAudience, bool _validateLifetime, bool _validateIssuerSigningKey)
         {
             return new TokenValidationParameters()
@@ -52,7 +52,7 @@ namespace ubereats
             };
         }
 
-        public static string? GetJwtSecurityToken()
+        public static async Task<string?> GetJwtSecurityToken()
         {
             // claim - требование, что требуется для jwt-токена
             var claims = new List<Claim>
@@ -66,12 +66,12 @@ namespace ubereats
                 claims,
                 notBefore: DateTime.Now,
                 expires: DateTime.Now.AddMinutes(60), // токен действителен час с момента создания
-                signingCredentials: GetSigningCredentials()  // алгоритм шифрования
+                signingCredentials: await GetSigningCredentials()  // алгоритм шифрования
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        public static string? GetJwtSecurityToken(string _subject, string _email, string _issuer = Constants.issuer, string _audience = Constants.audience,
+        public static async Task<string?> GetJwtSecurityToken(string _subject, string _email, string _issuer = Constants.issuer, string _audience = Constants.audience,
                                             DateTime? _notBefore = null, DateTime? _expires = null, SigningCredentials _signingCredentials = null)
         {
             // claim - требование, что требуется для jwt-токена
@@ -86,13 +86,13 @@ namespace ubereats
                 claims,
                 notBefore: _notBefore ?? DateTime.Now,
                 expires: _expires ?? DateTime.Now.AddMinutes(60), // токен действителен час с момента создания
-                signingCredentials: _signingCredentials ?? GetSigningCredentials() // алгоритм шифрования
+                signingCredentials: _signingCredentials ?? await GetSigningCredentials() // алгоритм шифрования
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static SigningCredentials GetSigningCredentials()
+        public static async Task<SigningCredentials> GetSigningCredentials()
         {
             return new SigningCredentials(Constants.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256);
         }

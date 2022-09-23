@@ -1,57 +1,59 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using ubereats.Interfaces;
+using ubereats.DAL.Context;
+using ubereats.DAL.Interfaces;
+using ubereats.DAL.Repository;
 using ubereats.Models;
 
 namespace ubereats.Controllers
 {
-    public class HomeController : Controller, IRestaurant
+    public class HomeController : Controller
     {
         private readonly RestaurantContext db;
+        private readonly ILogger<HomeController> logger;
+        private readonly RestaurantRepository restaurantRepository;
         //private readonly HttpContext httpContext;
-        
 
-        public HomeController(RestaurantContext context)
+
+        public HomeController(RestaurantContext _context, ILogger<HomeController> _logger)
         {
-            db = context;
+            logger = _logger;
+            db = _context;
+            restaurantRepository = new RestaurantRepository(db);
         }
 
         public async Task<IActionResult> Index()
         {
             ViewBag.Title = "restaurants";
             ViewBag.Search = null;
-            var list = db.Restaurants.Where(r => r.isDeleted == false).ToList();
-            list.ForEach(rest => rest.Image = null);    // чтобы не нагружать, все равно массив байт Image там не используется
-            return View(list);
+            var restaurants = await restaurantRepository.Select();
+            return View(restaurants);
         }
 
+        //[HttpGet]
         /// <summary>
         /// Поиск ресторана по имени и кухне
         /// </summary>
         /// <param name="restName"></param>
         /// <returns></returns>
-        public IActionResult SearchRestaurant(string restName)
+        public async Task<IActionResult> SearchRestaurant(string restName)
         {
             ViewBag.Title = "restaurants";
             ViewBag.Search = restName;
-            List<Restaurant> list;
-            if (!String.IsNullOrEmpty(restName))
-                list = db.Restaurants.Where(r => r.isDeleted == false && (r.RestName.ToLower().Contains(restName.ToLower()) || r.KitchenType.ToLower().Contains(restName.ToLower()))).ToList();
-            else
-                list = db.Restaurants.Where(r => r.isDeleted == false).ToList();
-            list.ForEach(rest => rest.Image = null);    // чтобы не нагружать, все равно массив байт Image там не используется
-            return View("~/Views/Home/Index.cshtml", list);
+            var restaurants = await restaurantRepository.GetForSearch(restName);
+            return View("~/Views/Home/Index.cshtml", restaurants);
         }
 
-        public ActionResult GetImage(int id)
+        [HttpGet]
+        public async Task<ActionResult> GetImage(int id)
         {
-            byte[] imageData = db.Restaurants.First(r => r.ID == id).Image;
+            byte[] imageData = await restaurantRepository.GetImageByteById(id);
             return File(imageData, "image/jpg");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public async Task<IActionResult> Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }

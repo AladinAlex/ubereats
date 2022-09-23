@@ -6,7 +6,7 @@ namespace ubereats.Models
     public class User
     {
         [Column("User_ID")]
-        public int Id { get; set; }
+        public int ID { get; set; }
 
         [Display(Name = "Логин:")]
         [Required(ErrorMessage = "Введите логин")]

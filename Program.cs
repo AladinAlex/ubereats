@@ -5,19 +5,28 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using NLog.Web;
+using NLog.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using ubereats.Models;
+using ubereats.DAL.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<RestaurantContext>(options => options.UseSqlServer(connection));
 
-builder.Services.AddAuthentication("AladinAuth").AddJwtBearer("AladinAuth", config => {
+builder.Services.AddLogging(logging => {
+    logging.ClearProviders();
+    logging.SetMinimumLevel(LogLevel.Trace);
+}) ;
+builder.Host.UseNLog();
 
+builder.Services.AddAuthentication("AladinAuth").AddJwtBearer("AladinAuth", config => {
     config.TokenValidationParameters = JwtConfiguration.GetTokenValidationParameters();
 });
-//builder.Services.AddAuthorization();
+
 
 // Добавление сервисов в контейнер
 builder.Services.AddControllersWithViews();
@@ -39,7 +48,14 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.Map("/Authentication/login/{login}&{password}", (string login, string password) => {
+    Console.WriteLine("You are in Authentication/login");
+    });
 
+
+//app.Map("/Restaurant/Restaurant/{id}", (int id) => {
+//    Console.WriteLine($"Rest's id = {id}");
+//});
 
 app.Run();
 
