@@ -8,5 +8,6 @@ namespace ubereats.Models.Authentication.JWT
         string GenerateToken(int UserID, string loginname, string password);
         TokenValidationParameters GetTokenValidationParameters();
         JwtSecurityToken GetJwtSecurityToken(string token);
+        bool IsTokenValid(string token);
     }
 }

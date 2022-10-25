@@ -1,6 +1,4 @@
-﻿using ubereats.Models;
-
-namespace ubereats.Models.Restaurant
+﻿namespace ubereats.Models.Rest
 {
     public interface IRestaurantRepository
     {

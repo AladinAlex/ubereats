@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ubereats.Models;
+using ubereats.Models.Context;
 
-namespace ubereats.Models.Restaurant
+namespace ubereats.Models.Rest
 {
     public class RestaurantRepository : IRestaurantRepository
     {

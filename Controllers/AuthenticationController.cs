@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
 using System.Security.Claims;
-using ubereats.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using ubereats.DAL.Context;
-using ubereats.Models.DAL.Repository;
+using ubereats.Models.Authentication.JWT;
+using ubereats.Models.Authentication.User;
+using ubereats.Models.Context;
+using Microsoft.AspNetCore.Authentication;
+using System.Net.Http;
 
 namespace ubereats.Controllers
 {
@@ -17,26 +19,39 @@ namespace ubereats.Controllers
     AuthenticationController : Controller
     {
         private readonly RestaurantContext db;
-        private readonly UserRepository userRepository;
+        private readonly IJwtConfiguration _jwtConfiguration;
+        private readonly IUserRepository userRepository;
         //private readonly HttpContext httpContext;
 
-        public AuthenticationController(RestaurantContext context)
+        public AuthenticationController(RestaurantContext context, IJwtConfiguration jwtConfiguration)
         {
             db = context;
             userRepository = new UserRepository(db);
+            _jwtConfiguration = jwtConfiguration;
         }
 
+        [AllowAnonymous]
+        [Route("Login")]
         [HttpPost]
-        public async Task<IActionResult> Login(User _user) // авторизоваться
+        public async Task<IActionResult> Login(User _user)
         {
             if (ModelState.IsValid) // если валидный объект User
             {
                 User user = await userRepository.GetAsync(_user);
                 if (user != null)
                 {
-                    var jwt = await JwtConfiguration.GetJwtSecurityToken(user.loginname, user.email);
-                    ViewBag.Token = jwt;
-                    return Redirect("/");
+                    var token = _jwtConfiguration.GenerateToken(user.ID, user.loginname, user.password);
+
+                    HttpContext.Session.SetString("Token", token);
+
+                    //ViewBag.Token = token;
+                    //return Redirect("/");
+                    if (token == null)
+                        return Unauthorized();
+                    else
+                        return Ok(token);
+                    //return Redirect("/");
+                    //return View("~/Views/Home/Index.cshtml");
                 }
             }
             return View("~/Views/Authentication/Authentication.cshtml");

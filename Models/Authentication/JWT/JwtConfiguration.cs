@@ -1,100 +1,84 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Unicode;
 
 namespace ubereats.Models.Authentication.JWT
 {
-    public class JwtConfiguration
+    public class JwtConfiguration : IJwtConfiguration
     {
-        /// <summary>
-        /// Default token configuration
-        /// </summary>
-        /// <returns></returns>
-        public static async Task<TokenValidationParameters> GetTokenValidationParameters()
+        readonly IConfiguration _configuration;
+        private readonly byte[] Key;
+
+        public JwtConfiguration(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            Key = Encoding.UTF8.GetBytes(_configuration["JWTConfig:Key"]!);
+        }
+
+        public TokenValidationParameters GetTokenValidationParameters()
         {
             return new TokenValidationParameters()
             {
                 // укзывает, будет ли валидироваться издатель при валидации токена
                 ValidateIssuer = true,
                 // строка, представляющая издателя
-                ValidIssuer = Constants.issuer,
+                ValidIssuer = _configuration["JWTConfig:Issuer"]!,
                 // будет ли валидироваться потребитель токена
                 ValidateAudience = true,
                 // установка потребителя токена
-                ValidAudience = Constants.audience,
+                ValidAudience = _configuration["JWTConfig:Audience"]!,
                 // будет ли валидироваться время существования
                 ValidateLifetime = true,
                 // установка ключа безопасности
-                IssuerSigningKey = Constants.GetSymmetricSecurityKey(),
+                IssuerSigningKey = new SymmetricSecurityKey(Key),
                 // валидация ключа безопасности
                 ValidateIssuerSigningKey = true
             };
         }
-        public static async Task<TokenValidationParameters> GetTokenValidationParameters(bool _validateIssuer, string _validIssuer, bool _validateAudience,
-                                                                                string _validAudience, bool _validateLifetime, bool _validateIssuerSigningKey)
-        {
-            return new TokenValidationParameters()
-            {
-                // укзывает, будет ли валидироваться издатель при валидации токена
-                ValidateIssuer = _validateIssuer,
-                // строка, представляющая издателя
-                ValidIssuer = _validIssuer,
-                // будет ли валидироваться потребитель токена
-                ValidateAudience = _validateAudience,
-                // установка потребителя токена
-                ValidAudience = _validAudience,
-                // будет ли валидироваться время существования
-                ValidateLifetime = _validateLifetime,
-                // установка ключа безопасности
-                IssuerSigningKey = Constants.GetSymmetricSecurityKey(),
-                // валидация ключа безопасности
-                ValidateIssuerSigningKey = _validateIssuerSigningKey
-            };
-        }
 
-        public static async Task<string?> GetJwtSecurityToken()
+        public string GenerateToken(int UserID, string loginname, string password)
         {
-            // claim - требование, что требуется для jwt-токена
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, "admin"), // пользователь
-                new Claim(JwtRegisteredClaimNames.Email, "admin@mail.ru")
+            var claims = new List<Claim> {
+                new Claim(_configuration["TokenClaims:UserIDClaimType"], UserID.ToString()),
+                new Claim(_configuration["TokenClaims:LoginnameClaimType"], loginname),
+                new Claim(_configuration["TokenClaims:PasswordClaimType"], password)
             };
 
-            var token = new JwtSecurityToken(Constants.issuer,
-                Constants.audience,
+            var tokenDescriptor = new JwtSecurityToken(_configuration["JWTConfig:Issuer"]!,
+                _configuration["JWTConfig:Audience"]!,
                 claims,
                 notBefore: DateTime.Now,
                 expires: DateTime.Now.AddMinutes(60), // токен действителен час с момента создания
-                signingCredentials: await GetSigningCredentials()  // алгоритм шифрования
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Key), SecurityAlgorithms.HmacSha256)  // алгоритм шифрования
                 );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
-        public static async Task<string?> GetJwtSecurityToken(string _subject, string _email, string _issuer = Constants.issuer, string _audience = Constants.audience,
-                                            DateTime? _notBefore = null, DateTime? _expires = null, SigningCredentials _signingCredentials = null)
+
+        public JwtSecurityToken GetJwtSecurityToken(string token)
         {
-            // claim - требование, что требуется для jwt-токена
-            var claims = new List<Claim>
+            token = token.Replace("Bearer ", "");
+            var jwtToken = new JwtSecurityToken(token);
+            return jwtToken;
+        }
+
+        public bool IsTokenValid(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
             {
-                new Claim(JwtRegisteredClaimNames.Sub, _subject), // пользователь
-                new Claim(JwtRegisteredClaimNames.Email, _email)
-            };
-
-            var token = new JwtSecurityToken(_issuer,
-                _audience,
-                claims,
-                notBefore: _notBefore ?? DateTime.Now,
-                expires: _expires ?? DateTime.Now.AddMinutes(60), // токен действителен час с момента создания
-                signingCredentials: _signingCredentials ?? await GetSigningCredentials() // алгоритм шифрования
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public static async Task<SigningCredentials> GetSigningCredentials()
-        {
-            return new SigningCredentials(Constants.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256);
+                tokenHandler.ValidateToken(
+                    token,
+                    new JwtConfiguration(_configuration).GetTokenValidationParameters(),
+                    out SecurityToken validatedToken);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

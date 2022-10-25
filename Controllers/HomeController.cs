@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using ubereats.DAL.Context;
-using ubereats.DAL.Interfaces;
-using ubereats.DAL.Repository;
-using ubereats.Models;
+using ubereats.Models.Context;
+using ubereats.Models.Error;
+using ubereats.Models.Rest;
 
 namespace ubereats.Controllers
 {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ubereats.DAL.Context;
+using ubereats.Models.Context;
 
 namespace ubereats.Models.Authentication.User
 {

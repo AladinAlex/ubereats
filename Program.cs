@@ -1,4 +1,3 @@
-using ubereats;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -9,8 +8,10 @@ using Microsoft.Extensions.Logging;
 using NLog.Web;
 using NLog.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using ubereats.Models;
-using ubereats.DAL.Context;
+using ubereats.Models.Authentication.JWT;
+using ubereats.Models.Context;
+using ubereats.Models.Authentication.User;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,13 +24,38 @@ builder.Services.AddLogging(logging => {
 }) ;
 builder.Host.UseNLog();
 
-builder.Services.AddAuthentication("AladinAuth").AddJwtBearer("AladinAuth", config => {
-    config.TokenValidationParameters = JwtConfiguration.GetTokenValidationParameters();
-});
+builder.Services.AddAuthentication(schema =>
+{ 
+    schema.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    schema.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, config => {
+        config.SaveToken = true;
 
+        //config.Events = new JwtBearerEvents { 
+        //    OnMessageReceived = context =>
+        //    {
+        //        if(context.Request.Query.ContainsKey("Token"))
+        //        {
+        //            context.Token = context.Request.Query["Token"];
+        //        }
+        //        return Task.CompletedTask;
+        //    }
+        //};
 
+        config.TokenValidationParameters = new JwtConfiguration(builder.Configuration).GetTokenValidationParameters();
+
+    });
+//builder.Services.AddSingleton<IJwtConfiguration, JwtConfiguration>();
+
+builder.Services.AddSession();
 // Добавление сервисов в контейнер
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<IUserRepository, UserRepository>();  
+builder.Services.AddTransient<IJwtConfiguration, JwtConfiguration>();
+//builder.Services.AddScoped<IUserRepository, UserRepository>();  
+//builder.Services.AddScoped<IJwtConfiguration, JwtConfiguration>();  
 
 
 var app = builder.Build();
@@ -43,6 +69,17 @@ app.UseRouting();
 
 app.UseAuthorization();
 app.UseAuthentication();
+
+app.UseSession();
+app.Use(async (context, next) =>
+{
+    var token = context.Session.GetString("Token");
+    if (!string.IsNullOrEmpty(token))
+    {
+        context.Request.Headers.Add("Authorization", "Bearer " + token);
+    }
+    await next();
+});
 
 app.MapControllerRoute(
     name: "default",
