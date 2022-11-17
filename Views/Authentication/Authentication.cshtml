@@ -1,6 +1,8 @@
-﻿@using ubereats.Models.Authentication.User
-@model User;
+﻿@using ubereats.Models.Authorization;
+@model RegisterModel;
 
+
+@*https://codepen.io/FlorinPop17/pen/vPKWjd*@
 @{
     Layout = null;
 }
@@ -12,120 +14,50 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<title>Uber Eats - Authentication</title>
 	<link rel="stylesheet" href="~/css/autorization.css">
+@*	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>*@
+
 </head>
 <body>
-    <div>
-        @ViewBag.Token
-    </div>
-  <form method="post" class="login" asp-controller="Authentication" asp-action="Login">
+    <h1>Вход</h1>
+    <form method="post" asp-controller="Authentication" asp-action="Login" asp-antiforgery="true">
+        <div class="validation" asp-validation-summary="ModelOnly"></div>
+        <div>
+            <label asp-for="Username"></label><br />
+            <input type="text" asp-for="Username" />
+            <span asp-validation-for="Username"></span>
+        </div>
+        <div>
+            <label asp-for="Password"></label><br />
+            <input type="password" asp-for="Password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div>
+            <input type="submit" value="Save"   />
+        </div>
+    </form>
 
-      <p>
-          <label asp-for="loginname"></label>
-          <input asp-for="loginname" type="text"/>
-          <span asp-validation-for="loginname"></span>
-      </p>
-
-      <p>
-          <label asp-for="password"></label>
-          <input asp-for="password" type="password"/>
-          <span asp-validation-for="password"></span>
-      </p>
-
-      <p class="login-submit">
-          <button type="submit" class="login-button" asp-area="" asp-controller="Authentication" asp-action="Login">Войти</button>
-      </p>
-
-    <p class="forgot-password"><a  asp-area="" asp-controller="Home" asp-action="Index">Вернуться на главную</a></p>
-  </form>
-
-  @*<script>
-        var tokenKey = "accessToken";
- 
-        // отпавка запроса к контроллеру AccountController для получения токена
-        async function getTokenAsync() {
- 
-            // получаем данные формы и фомируем объект для отправки
-            const formData = new FormData();
-            formData.append("grant_type", "password");
-            formData.append("username", document.getElementById("emailLogin").value);
-            formData.append("password", document.getElementById("passwordLogin").value);
- 
-            // отправляет запрос и получаем ответ
-            const response = await fetch("/token", {
-                method: "POST",
-                headers: {"Accept": "application/json"},
-                body: formData
-            });
-            // получаем данные 
-            const data = await response.json();
- 
-            // если запрос прошел нормально
-            if (response.ok === true) {
- 
-                // изменяем содержимое и видимость блоков на странице
-                document.getElementById("userName").innerText = data.username;
-                document.getElementById("userInfo").style.display = "block";
-                document.getElementById("loginForm").style.display = "none";
-                // сохраняем в хранилище sessionStorage токен доступа
-                sessionStorage.setItem(tokenKey, data.access_token);
-                console.log(data.access_token);
-             }
-            else {
-                // если произошла ошибка, из errorText получаем текст ошибки
-                console.log("Error: ", response.status, data.errorText);
-            }
-        };
-        // отправка запроса к контроллеру ValuesController
-        async function getData(url) {
-            const token = sessionStorage.getItem(tokenKey);
- 
-            const response = await fetch(url, {
-                method: "GET",
-                headers: {
-                    "Accept": "application/json",
-                    "Authorization": "Bearer " + token  // передача токена в заголовке
-                }
-            });
-            if (response.ok === true) {
-                 
-                const data = await response.json();
-                alert(data)
-            }
-            else
-                console.log("Status: ", response.status);
-        };
- 
-        // получаем токен
-        document.getElementById("submitLogin").addEventListener("click", e => {
- 
-            e.preventDefault();
-            getTokenAsync();
-        });
- 
-        // условный выход - просто удаляем токен и меняем видимость блоков
-        document.getElementById("logOut").addEventListener("click", e => {
- 
-            e.preventDefault();
-            document.getElementById("userName").innerText = "";
-            document.getElementById("userInfo").style.display = "none";
-            document.getElementById("loginForm").style.display = "block";
-            sessionStorage.removeItem(tokenKey);
-        });
- 
- 
-        // кнопка получения имя пользователя  - /api/values/getlogin
-        document.getElementById("getDataByLogin").addEventListener("click", e => {
- 
-            e.preventDefault();
-            getData("/api/values/getlogin");
-        });
- 
-        // кнопка получения роли  - /api/values/getrole
-        document.getElementById("getDataByRole").addEventListener("click", e => {
- 
-            e.preventDefault();
-            getData("/api/values/getrole");
-        });
-    </script>*@
+    <h1>Регистрация</h1>
+    <form method="post" asp-controller="Authentication" asp-action="Register" asp-antiforgery="true">
+        <div class="validation" asp-validation-summary="ModelOnly"></div>
+        <div>
+            <label asp-for="Username"></label><br />
+            <input type="text" asp-for="Username" />
+            <span asp-validation-for="Username"></span>
+        </div>
+        <div>
+            <label asp-for="Email"></label><br />
+            <input type="email" asp-for="Email" />
+            <span asp-validation-for="Email"></span>
+        </div>
+        <div>
+            <label asp-for="Password"></label><br />
+            <input type="password" asp-for="Password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div>
+            <input type="submit" value="Save"   />
+        </div>
+    </form>
 </body>
 </html>

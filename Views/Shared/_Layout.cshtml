@@ -21,10 +21,20 @@
                     </form>
                 </div>
                 <div class="header_buttons">
-                    <form method="post">
-                        <input type="submit" class="btnEnter" value="Войти" asp-area="" asp-controller="Authentication" asp-action="Index" />
-                    </form>
-                    <img src="~/basket.png" alt="logo" class="logo_img" height="23" width="19">
+                    @if(User.Identity.IsAuthenticated)
+                    {
+                        <form method="post">
+                            <input type="submit" class="btnEnter" value="Выйти" asp-area="" asp-controller="Authentication" asp-action="Logout" />
+                        </form>
+                        <img src="~/basket.png" alt="logo" class="logo_img" height="23" width="19">
+                    }
+                    else
+                    {
+                        <form method="post">
+                            <input type="submit" class="btnEnter" value="Войти" asp-area="" asp-controller="Authentication" asp-action="Authentication" />
+                        </form>
+                        <img src="~/basket.png" alt="logo" class="logo_img" height="23" width="19">
+                    }
                 </div>
             </div>
         </div>

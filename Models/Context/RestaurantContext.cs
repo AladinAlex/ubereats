@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ubereats.Models.Authentication.User;
 using ubereats.Models.Rest;
 
 namespace ubereats.Models.Context
@@ -7,7 +6,6 @@ namespace ubereats.Models.Context
     public class RestaurantContext : DbContext
     {
         public DbSet<Restaurant> Restaurants { get; set; } = null!;
-        public DbSet<User> Users { get; set; } = null!;
 
         public RestaurantContext(DbContextOptions<RestaurantContext> options) : base(options)
         {
@@ -118,14 +116,6 @@ namespace ubereats.Models.Context
                         Image = convertImageToByte(@"\wwwroot\BQ.png")
                     }
             );
-            modelBuilder.Entity<User>().HasData(
-                new User
-                {
-                    ID = 1,
-                    loginname = "admin",
-                    password = "admin",
-                    email = "admin@mail.ru",
-                });
         }
 
         private byte[] convertImageToByte(string path)

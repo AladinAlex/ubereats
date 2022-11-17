@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -8,69 +8,91 @@ using Microsoft.Extensions.Logging;
 using NLog.Web;
 using NLog.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using ubereats.Models.Authentication.JWT;
 using ubereats.Models.Context;
-using ubereats.Models.Authentication.User;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using ubereats.Models.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<RestaurantContext>(options => options.UseSqlServer(connection));
 
-builder.Services.AddLogging(logging => {
-    logging.ClearProviders();
-    logging.SetMinimumLevel(LogLevel.Trace);
-}) ;
-builder.Host.UseNLog();
-
-builder.Services.AddAuthentication(schema =>
-{ 
-    schema.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    schema.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, config => {
-        config.SaveToken = true;
-
-        //config.Events = new JwtBearerEvents { 
-        //    OnMessageReceived = context =>
-        //    {
-        //        if(context.Request.Query.ContainsKey("Token"))
-        //        {
-        //            context.Token = context.Request.Query["Token"];
-        //        }
-        //        return Task.CompletedTask;
-        //    }
-        //};
-
-        config.TokenValidationParameters = new JwtConfiguration(builder.Configuration).GetTokenValidationParameters();
-
-    });
-//builder.Services.AddSingleton<IJwtConfiguration, JwtConfiguration>();
-
-builder.Services.AddSession();
-// Добавление сервисов в контейнер
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddTransient<IUserRepository, UserRepository>();  
-builder.Services.AddTransient<IJwtConfiguration, JwtConfiguration>();
-//builder.Services.AddScoped<IUserRepository, UserRepository>();  
-//builder.Services.AddScoped<IJwtConfiguration, JwtConfiguration>();  
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<RestaurantContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(connection));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
+    options.Password.RequiredLength = 5;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+        })
+        .AddEntityFrameworkStores<AuthDbContext>()
+        .AddDefaultTokenProviders();
+
+builder.Services.AddTransient<IPasswordValidator<IdentityUser>, PasswordValidator>(serv => new PasswordValidator(5));
+
+builder.Services.AddLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.SetMinimumLevel(LogLevel.Trace);
+});
+builder.Host.UseNLog();
+
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+});
+
+builder.Services.AddAuthentication(schema =>
+{
+    schema.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    schema.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    schema.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(config =>
+    {
+        var key = Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!);
+        config.SaveToken = true;
+        // faslse только для разработки
+        config.RequireHttpsMetadata = false;
+        config.TokenValidationParameters = new ()
+        {
+            // укзывает, будет ли валидироваться издатель при валидации токена
+            ValidateIssuer = true,
+            // строка, представляющая издателя
+            ValidIssuer = builder.Configuration["JWT:ValidIssuer"]!,
+            // будет ли валидироваться потребитель токена
+            ValidateAudience = true,
+            // установка потребителя токена
+            ValidAudience = builder.Configuration["JWT:ValidAudience"]!,
+            // будет ли валидироваться время существования
+            ValidateLifetime = true,
+            // установка ключа безопасности
+            IssuerSigningKey = new SymmetricSecurityKey(key),   
+            // валидация ключа безопасности
+            ValidateIssuerSigningKey = true
+        };
+
+    });
+
+//builder.Services.AddSingleton<IJwtConfiguration, JwtConfiguration>();
+// Добавление сервисов в контейнер
+//builder.Services.AddTransient<IUserRepository, UserRepository>();
+//builder.Services.AddTransient<IJwtConfiguration, JwtConfiguration>();
+//builder.Services.AddSingleton<IJwtConfiguration, JwtConfiguration>();
 
 
 var app = builder.Build();
 
-app.UseDefaultFiles();
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-app.UseAuthentication();
-
+app.UseCookiePolicy();
 app.UseSession();
+
+
 app.Use(async (context, next) =>
 {
     var token = context.Session.GetString("Token");
@@ -81,18 +103,20 @@ app.Use(async (context, next) =>
     await next();
 });
 
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+//});
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Map("/Authentication/login/{login}&{password}", (string login, string password) => {
-    Console.WriteLine("You are in Authentication/login");
-    });
-
-
-//app.Map("/Restaurant/Restaurant/{id}", (int id) => {
-//    Console.WriteLine($"Rest's id = {id}");
-//});
 
 app.Run();
 
