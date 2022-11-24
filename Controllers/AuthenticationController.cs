@@ -133,23 +133,22 @@ namespace ubereats.Controllers
                     return RedirectToAction("Authentication");
                 }
 
+                //// Добавить при создании БД
+                //if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                //    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
 
-                // Добавить при создании БД
-                if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                //if (!await _roleManager.RoleExistsAsync(UserRoles.User))
+                //    await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                ////
 
-                if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-                //
-
-                if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                {
-                    await _userManager.AddToRoleAsync(user, UserRoles.Admin);
-                }
-                if (await _roleManager.RoleExistsAsync(UserRoles.User))
-                {
-                    await _userManager.AddToRoleAsync(user, UserRoles.User);
-                }
+                //if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                //{
+                //    await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+                //}
+                //if (await _roleManager.RoleExistsAsync(UserRoles.User))
+                //{
+                //    await _userManager.AddToRoleAsync(user, UserRoles.User);
+                //}
                 return RedirectToAction("Index", "Home");
             }
             else

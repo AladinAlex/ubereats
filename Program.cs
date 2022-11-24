@@ -21,7 +21,14 @@ builder.Services.AddControllersWithViews();
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<RestaurantContext>(options => options.UseSqlServer(connection));
-builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<AuthDbContext>(options =>
+{
+    options.LogTo(Console.WriteLine); // логирование запросов в бд в консоль(пока)
+    options.UseSqlServer(connection);
+    });
+
+builder.Services.AddTransient<IPasswordValidator<IdentityUser>, PasswordValidator>(serv => new PasswordValidator(5));
+builder.Services.AddTransient<IUserValidator<IdentityUser>, LoginValidator>();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
     options.Password.RequiredLength = 5;
@@ -29,11 +36,12 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
-        })
+    options.User.AllowedUserNameCharacters = null; // обнуление из каких символов может состоянить логин
+})
         .AddEntityFrameworkStores<AuthDbContext>()
         .AddDefaultTokenProviders();
 
-builder.Services.AddTransient<IPasswordValidator<IdentityUser>, PasswordValidator>(serv => new PasswordValidator(5));
+
 
 builder.Services.AddLogging(logging =>
 {
